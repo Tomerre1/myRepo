@@ -7,13 +7,23 @@ GAME RULES:
 - The first player to reach 100 points on GLOBAL score wins the game
 */
 
-var score = [0,0] , roundScore = 0 , Dice = 0 , activePlayer = 0;
+var score = [0,0] , roundScore, Dice , activePlayer ;
+
 function initStartGame(){
-document.querySelector('#current-' + 1).innerHTML = '<em>' + 0 + '<em>';
-document.querySelector('#current-' + 0).innerHTML = '<em>' + 0 + '<em>';
-document.getElementById('score-1').textContent = '0' ;
-document.getElementById('score-0').textContent = '0' ;
-document.querySelector('.dice').style.display = 'none';
+    score[0] = 0;
+    score[1] = 0;
+    roundScore = 0;
+    activePlayer = 0;
+    Dice = 0;
+    document.getElementById('name-0').textContent = 'Player 1';
+    document.getElementById('name-1').textContent = 'Player 2';
+    document.querySelector('#current-' + 1).innerHTML = '<em>' + 0 + '<em>';
+    document.querySelector('#current-' + 0).innerHTML = '<em>' + 0 + '<em>';
+    document.getElementById('score-1').textContent = '0' ;
+    document.getElementById('score-0').textContent = '0' ;
+    document.querySelector('.dice').style.display = 'none';
+    document.querySelector('.player-0-panel').classList.add('active');
+    document.querySelector('.player-1-panel').classList.remove('active');
 }
 initStartGame();
 
@@ -55,7 +65,7 @@ document.querySelector('.btn-hold').addEventListener('click',function(){
     document.querySelector('#score-' + activePlayer).innerHTML = '<em>' + score[activePlayer] + '<em>';
     if(score[0] >= 20 || score[1]>= 20){
         document.querySelector("#name-" + activePlayer).innerHTML = '<b>' + 'Winner!!!!'+ '<b>';
-        document.querySelector('.player-' + activePlayer + '-panel').classList.toggle('active');
+        document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
         roundScore = 0;
         alert('The Winner is: Player' + (activePlayer+1));
         return
@@ -63,15 +73,6 @@ document.querySelector('.btn-hold').addEventListener('click',function(){
     nextPlayerTurn();
 });
 
-document.querySelector('.btn-new').addEventListener('click',function(){
-    score[0] = 0;
-    score[1] = 0;
-    roundScore = 0;
-    activePlayer = 0;
-    Dice = 0;
-    document.getElementById('name-0').textContent = 'Player 1';
-    document.getElementById('name-1').textContent = 'Player 2';
-    initStartGame();
-});
+document.querySelector('.btn-new').addEventListener('click',function(){initStartGame();});
 
 
