@@ -34,8 +34,18 @@ var UIController = (function (){   // Interface Controller //
     } 
 })();
 
-var controlCenter = (function(budgetCtrl,UICtrl){                                             // Connect between UI and Data Modules //
-    function Update(){
+ // Connect between UI and Data Modules //
+var controlCenter = (function(budgetCtrl,UICtrl){   
+    function setupEventListeners(){
+        document.querySelector(UICtrl.getDOMStrings().buttonV).addEventListener('click',updateItem);
+        document.addEventListener('keypress',function(event){                              //Because keypress on enter is in the global environment of the window
+            //event paramter is event from Listener when we push button in our app, im going to check his key code by using console.log and see object prortyes and his code:13
+        if(event.keyCode === 13 || event.which === 13){                                 // its mean Enter pressed keyCode method for normal browser and which methods for older browsers
+            updateItem();
+            }                                                                                 
+        })
+    }                                         
+    function updateItem(){
         // 1.Get input data from field 
         var input = UICtrl.getInput();
         // 2.Add item to budget controller
@@ -45,12 +55,11 @@ var controlCenter = (function(budgetCtrl,UICtrl){                               
         // 4.Update calculated budget
         // 5.Update UI with calculated budget
     }
-    document.querySelector(UICtrl.getDOMStrings().buttonV).addEventListener('click',Update);
-
-    document.addEventListener('keypress',function(event){                              //Because keypress on enter is in the global environment of the window
-                                                                                     //event paramter is event from Listener when we push button in our app, im going to check his key code by using console.log and see object prortyes and his code:13
-    if(event.keyCode === 13 || event.which === 13){                                 // its mean Enter pressed keyCode method for normal browser and which methods for older browsers
-        Update();
-    }                                                                                 
-    })
+    return { 
+        init: function(){
+            setupEventListeners();
+        }
+    }
 })(budgetController,UIController);
+
+controlCenter.init();
