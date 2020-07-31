@@ -1,11 +1,11 @@
-/*Im using Module Pattern with closures and IIFE each module is indepandant by his self UI Seprated from Data
+/*Im using Module Pattern with closures and IIFE each module is independent by his self UI Separated from Data
 Each on of the modules need to return object by return {.....}
 */
 
- // Data Controller //
+ // Data Controller 
 var budgetController = (function (){  
     
-    //Function constructors For Expense Items & Income Items//
+    //Function constructors For Expense Items & Income Items
     var Expense = function(id , description ,value){
         this.id = id;
         this.description = description;
@@ -25,18 +25,35 @@ var budgetController = (function (){
             inc: []
         },
         total: {
-            totalExp:0,
-            totalInc:0
+            exp:0,
+            inc:0
         }
     }
-    return {
-            
+    return {  //type === exp/inc
+        addItem: function(type,desc,val){
+            var newItem,ID;
+            // Generate new unique ID for each item
+            ID = (data.allItems[type + ''].length !==0) ? data.allItems[type + ''][data.allItems[type + ''].length-1].id + 1 : 0;
+
+            //Create new item based on 'inc' or 'exp' type
+            newItem = (type === 'exp') ? new Expense(ID,desc,val) : new Income(ID,desc,val);
+
+            //Push new item into data structure
+            data.allItems[type].push(newItem); 
+            console.log(data.total.exp);
+
+            return newItem;
+        },
+        testing: function(){
+            console.log(data);
+        }
     }
 })();
 
-// Interface Controller // 
-// Doing this object if we in future want to change name of the classes in html it make our life better by doing it and not change in the entire code//
+// Interface Controller 
+
 var UIController = (function (){   
+    // Doing this object if we in future want to change name of the classes in html it make our life better by doing it and not change in the entire code
     var DOMStrings = {                                      
         Type: '.add__type',
         Description: '.add__description',
@@ -45,6 +62,7 @@ var UIController = (function (){
     }
 
     return {
+        //get inputs from HTML//
         getInput: function(){ 
             return {
                 type: document.querySelector(DOMStrings.Type).value,        
@@ -52,6 +70,7 @@ var UIController = (function (){
                 value: document.querySelector(DOMStrings.Value).value
             }     
         },
+        //Get Access to DOMString object
         getDOMStrings: function(){
             return DOMStrings;
         }
@@ -59,13 +78,13 @@ var UIController = (function (){
 })();
 
  // Connect between UI and Data Modules //
- //Because keypress on enter is in the global environment of the window
- //event paramter is event from Listener when we push button in our app, im going to check his key code by using console.log and see object prortyes and his code:13
- // its mean Enter pressed keyCode method for normal browser and which methods for older browsers
 var controlCenter = (function(budgetCtrl,UICtrl){   
     function setupEventListeners(){
         document.querySelector(UICtrl.getDOMStrings().buttonV).addEventListener('click',updateItem);
-        document.addEventListener('keypress',function(event){                                                                                                           
+        //Using addEventLisener directly because keypress on enter is in the global environment of the window
+        //event paramter is event from Listener when we push button in our app, im going to check his key code by using console.log and see object KeyCode:13                                                                                                        
+        document.addEventListener('keypress',function(event){  
+        // its mean Enter pressed keyCode method for normal browser and which methods for older browsers 
         if(event.keyCode === 13 || event.which === 13){                                     
             updateItem();
             }                                                                                 
@@ -75,6 +94,8 @@ var controlCenter = (function(budgetCtrl,UICtrl){
         // 1.Get input data from field 
         var input = UICtrl.getInput();
         // 2.Add item to budget controller
+        var newItem = budgetController.addItem(input.type,input.description,input.value);
+        budgetCtrl.testing();
         // 3.Add item to UI controller
         // 4.Update calculated budget
         // 5.Update UI with calculated budget
