@@ -92,6 +92,26 @@ var UIController = (function (){
             //insert the html to the dom
             document.querySelector(element).insertAdjacentHTML('beforeend',newHTML);
         },
+
+        //clear description and value fields after each insert
+        clearFields: function(){
+            var fields,fieldsArr;
+
+            //fields return List
+            fields = document.querySelectorAll(DOMStrings.Description + ', ' + DOMStrings.Value); 
+
+            //fieldsArr converter from list to array by using trick of call with fields list - slice its function return copy of array
+            fieldsArr = Array.prototype.slice.call(fields);
+
+            //iterate over the arr and clear field by using .value
+            for(var i=0 ;i<fieldsArr.length ; i++)
+                fieldsArr[i].value = '';
+
+            //Focus in description after insert - its mean the mouse will be at description area after insertion and not in value area 
+            fieldsArr[0].focus(); 
+
+        },
+
         //Get Access to DOMString object
         getDOMStrings: function(){
             return DOMStrings;
@@ -120,8 +140,10 @@ var controlCenter = (function(budgetCtrl,UICtrl){
         newItem = budgetController.addItem(input.type,input.description,input.value);
         // 3.Add item to UI controller
         UICtrl.addListItem(newItem,input.type);
-        // 4.Update calculated budget
-        // 5.Update UI with calculated budget
+        // 4.Clear fields after each insert
+        UICtrl.clearFields();
+        // 5.Update calculated budget
+        // 6.Update UI with calculated budget
     }
     return { 
         init: function(){
