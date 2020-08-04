@@ -76,7 +76,9 @@ var UIController = (function (){
         expensesContainer: '.expenses__list',
         incomeContainer: '.income__list',
         Budget: '.budget__value',
-        Percentage: '.budget__expenses--percentage'
+        Percentage: '.budget__expenses--percentage',
+        IncomeBudget: '.budget__income--value',
+        ExpenseBudget: '.budget__expenses--value'
     }
 
     return {
@@ -129,6 +131,13 @@ var UIController = (function (){
 
         },
 
+        UpdateUI: function(data){
+            document.querySelector(DOMStrings.Budget).innerHTML = data.budget;
+            document.querySelector(DOMStrings.Percentage).innerHTML = (data.percentage !== -1) ? data.percentage + '%' : '---';
+            document.querySelector(DOMStrings.IncomeBudget).innerHTML = data.total.inc;
+            document.querySelector(DOMStrings.ExpenseBudget).innerHTML = data.total.exp;
+        },
+
         //Get Access to DOMString object
         getDOMStrings: function(){
             return DOMStrings;
@@ -154,8 +163,7 @@ var controlCenter = (function(budgetCtrl,UICtrl){
         budgetCtrl.calculateBudget();
         
         // 2.Update UI with calculated budget
-        document.querySelector(UICtrl.getDOMStrings().Budget).innerHTML = budgetCtrl.getData().budget;
-        document.querySelector(UICtrl.getDOMStrings().Percentage).innerHTML = budgetCtrl.getData().percentage + '%';
+        UICtrl.UpdateUI(budgetCtrl.getData());
     }   
     
     
@@ -177,6 +185,19 @@ var controlCenter = (function(budgetCtrl,UICtrl){
     }
     return { 
         init: function(){
+            //reset all fields 
+            UICtrl.UpdateUI({
+                allItems: {
+                    exp: [],
+                    inc: []
+                },
+                total: {
+                    exp:0,
+                    inc:0
+                },
+                budget: 0,
+                percentage: -1
+            })
             setupEventListeners();
         }
     }
