@@ -135,7 +135,7 @@ var UIController = (function (){
             //Replace the placeholder text with actual data
             newHTML = html.replace('%id%',obj.id);
             newHTML = newHTML.replace('%description%',obj.description);
-            newHTML = newHTML.replace('%value%',obj.value);
+            newHTML = newHTML.replace('%value%',this.numberFormat(parseInt(obj.value),type));
 
             //insert the html to the dom
             document.querySelector(element).insertAdjacentHTML('beforeend',newHTML);
@@ -170,10 +170,26 @@ var UIController = (function (){
 
         },
         UpdateUI: function(data){
-            document.querySelector(DOMStrings.Budget).innerHTML = data.budget;
+            var budgetSign;
+            if(data.budget > 0) budgetSign ="+ " + data.budget;
+            else budgetSign = data.budget;
+            document.querySelector(DOMStrings.Budget).innerHTML = budgetSign ;
             document.querySelector(DOMStrings.Percentage).innerHTML = (data.percentage !== -1) ? data.percentage + '%' : '---';
-            document.querySelector(DOMStrings.IncomeBudget).innerHTML = data.total.inc;
-            document.querySelector(DOMStrings.ExpenseBudget).innerHTML = data.total.exp;
+            document.querySelector(DOMStrings.IncomeBudget).innerHTML = this.numberFormat(data.total.inc , 'inc');
+            document.querySelector(DOMStrings.ExpenseBudget).innerHTML = this.numberFormat(data.total.exp , 'exp');
+        },
+        numberFormat: function(num,type){
+            var intPart,decPart,returnedNumber;
+            num = Math.abs(num);
+            num = num.toFixed(2);
+            num = num.split('.');
+            intPart = num[0];
+            decPart = num[1];
+            if(intPart.length > 3)
+                returnedNumber = intPart.substr(0,intPart.length-3) + ',' + intPart.substr(intPart.length-3,intPart.length);
+            else
+                returnedNumber = num[0];
+            return (type === 'exp')? '- ' + returnedNumber + '.' + decPart : '+ ' + returnedNumber + '.' + decPart;
         },
 
         //Get Access to DOMString object
