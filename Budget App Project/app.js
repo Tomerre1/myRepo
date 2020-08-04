@@ -122,7 +122,11 @@ var UIController = (function (){
             //insert the html to the dom
             document.querySelector(element).insertAdjacentHTML('beforeend',newHTML);
         },
-
+        //function that remove line of expense or income from the DOM  
+        removeListItem: function(htmlID){
+            var element = document.getElementById(htmlID);
+            element.parentNode.removeChild(element);
+        },
 
         //clear description and value fields after each insert
         clearFields: function(){
@@ -142,7 +146,6 @@ var UIController = (function (){
             fieldsArr[0].focus(); 
 
         },
-
         UpdateUI: function(data){
             document.querySelector(DOMStrings.Budget).innerHTML = data.budget;
             document.querySelector(DOMStrings.Percentage).innerHTML = (data.percentage !== -1) ? data.percentage + '%' : '---';
@@ -201,16 +204,17 @@ var controlCenter = (function(budgetCtrl,UICtrl){
     }
 
     function ctrlDeleteItem(event){
-        //getItemID get the unique id of the item 
+        //getItemID get the unique id of the item from html file
         var getItemID , splitID ,typeItem , idItem;
         getItemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
-        console.log(getItemID);
-
+    
         if (getItemID){
             splitID = getItemID.split('-');
             idItem = splitID[1];
             typeItem = splitID [0];
             budgetCtrl.removeItem(idItem,typeItem);
+            UICtrl.removeListItem(getItemID);
+            updateBudget();
             }
 
 
