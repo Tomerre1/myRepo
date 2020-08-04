@@ -10,7 +10,13 @@ var budgetController = (function (){
         this.id = id;
         this.description = description;
         this.value = value;
-    };        
+    };   
+    Expense.prototype.eachCalcPercentage = function(){
+        if(data.total.inc > 0)
+            this.percentage = Math.round((this.value / data.total.inc) * 100);
+        else
+            this.percentage = -1;
+    }     
 
     var Income = function(id , description ,value){
         this.id = id;
@@ -69,6 +75,17 @@ var budgetController = (function (){
             data['percentage'] = (data['total']['inc'] > 0) ? Math.round((data.total.exp / data.total.inc) * 100) : -1;
             data['budget'] = data.total.inc - data.total.exp;
         },
+        calculatePercentages: function(){
+            data.allItems['exp'].forEach(function(current){
+                current.eachCalcPercentage();
+            })
+        },
+        getAllExpensePercentages: function(){
+            var percentArr = data.allItems['exp'].map(function(cur){
+                return cur.percentage;
+            })
+            return percentArr;
+        },
         getData: function(){return data;},
         testing: function(){console.log(data);}
     }
@@ -89,7 +106,8 @@ var UIController = (function (){
         Percentage: '.budget__expenses--percentage',
         IncomeBudget: '.budget__income--value',
         ExpenseBudget: '.budget__expenses--value',
-        Container: '.container'
+        Container: '.container',
+        expPercent: '.item__percentage'
     }
 
     return {
@@ -127,7 +145,12 @@ var UIController = (function (){
             var element = document.getElementById(htmlID);
             element.parentNode.removeChild(element);
         },
-
+        eachExpensePercent: function(arr){
+            var fields = document.querySelectorAll(DOMStrings.expPercent);
+            for(var i = 0 ; i<fields.length ; i++ )
+                fields[i].textContent = arr[i] + '%';
+            
+        },
         //clear description and value fields after each insert
         clearFields: function(){
             var fields,fieldsArr;
@@ -183,8 +206,13 @@ var controlCenter = (function(budgetCtrl,UICtrl){
         
         // 2.Update UI with calculated budget
         UICtrl.UpdateUI(budgetCtrl.getData());
-    }   
+    };
     
+    function updatePercentages(item){
+        budgetCtrl.calculatePercentages();
+        UICtrl.eachExpensePercent(budgetController.getAllExpensePercentages()); 
+            
+    };
     
     function ctrlAddItem(){
         var input,newItem;
@@ -200,6 +228,8 @@ var controlCenter = (function(budgetCtrl,UICtrl){
             UICtrl.clearFields();
             //5. Calculate and update budget
             updateBudget();
+            //6. Calculate and update the percentages
+            updatePercentages(newItem);
         }
     }
 
@@ -215,6 +245,7 @@ var controlCenter = (function(budgetCtrl,UICtrl){
             budgetCtrl.removeItem(idItem,typeItem);
             UICtrl.removeListItem(getItemID);
             updateBudget();
+            updatePercentages();
             }
 
 
