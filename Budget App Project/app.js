@@ -78,7 +78,8 @@ var UIController = (function (){
         Budget: '.budget__value',
         Percentage: '.budget__expenses--percentage',
         IncomeBudget: '.budget__income--value',
-        ExpenseBudget: '.budget__expenses--value'
+        ExpenseBudget: '.budget__expenses--value',
+        Container: '.container'
     }
 
     return {
@@ -97,11 +98,11 @@ var UIController = (function (){
             var html , newHTML ,element;
             if(type === 'inc'){
                 element = DOMStrings.incomeContainer;
-                html= '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+                html= '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             }
             else{
                 element = DOMStrings.expensesContainer;
-                html='<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+                html='<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             }
             //Replace the placeholder text with actual data
             newHTML = html.replace('%id%',obj.id);
@@ -146,18 +147,23 @@ var UIController = (function (){
 })();
 
  // Connect between UI and Data Modules //
-var controlCenter = (function(budgetCtrl,UICtrl){  
+var controlCenter = (function(budgetCtrl,UICtrl){ 
+    
+    
     function setupEventListeners(){
-        document.querySelector(UICtrl.getDOMStrings().buttonV).addEventListener('click',updateItem);
+        document.querySelector(UICtrl.getDOMStrings().buttonV).addEventListener('click',ctrlAddItem);
         //Using addEventLisener directly because keypress on enter is in the global environment of the window
         //event paramter is event from Listener when we push button in our app, im going to check his key code by using console.log and see object KeyCode:13                                                                                                        
         document.addEventListener('keypress',function(event){  
         // its mean Enter pressed keyCode method for normal browser and which methods for older browsers 
         if(event.keyCode === 13 || event.which === 13){                                     
-            updateItem();
+            ctrlAddItem();
             }                                                                                 
         })
+        document.querySelector(UICtrl.getDOMStrings().Container).addEventListener('click',ctrlDeleteItem);
     }     
+
+
     function updateBudget(){
         // 1.Update calculated budget
         budgetCtrl.calculateBudget();
@@ -167,22 +173,45 @@ var controlCenter = (function(budgetCtrl,UICtrl){
     }   
     
     
-    function updateItem(){
+    function ctrlAddItem(){
         var input,newItem;
         // 1.Get input data from field 
         input = UICtrl.getInput();
         //make sure in description field wrote something and in value field wrote number
         if(input.description !== '' && !isNaN(input.value) && input.value > 0){
-        // 2.Add item to budget controller
-        newItem = budgetController.addItem(input.type,input.description,input.value);
-        // 3.Add item to UI controller
-        UICtrl.addListItem(newItem,input.type);
-        // 4.Clear fields after each insert
-        UICtrl.clearFields();
-        //5. Calculate and update budget
-        updateBudget();
+            // 2.Add item to budget controller
+            newItem = budgetCtrl.addItem(input.type,input.description,input.value);
+            // 3.Add item to UI controller
+            UICtrl.addListItem(newItem,input.type);
+            // 4.Clear fields after each insert
+            UICtrl.clearFields();
+            //5. Calculate and update budget
+            updateBudget();
         }
     }
+
+    function ctrlDeleteItem(event){
+        //getItemID get the unique id of the item 
+        var getItemID , splitID ,typeItem , idItem;
+        getItemID = event.target.parentNode.parentNode.parentNode.id;
+
+        if (getItemID){
+            splitID = getItemID.split('-');
+            idItem = splitID[1];
+            typeItem = splitID [0];
+            for (var i = 0 ; i<budgetCtrl.getData().allItems[type].length ;i++){
+                if(idItem === budgetCtrl.getData().allItems[type][i].id ){
+
+                }
+
+            }
+
+
+        }
+
+    }
+
+
     return { 
         init: function(){
             //reset all fields 
@@ -198,6 +227,8 @@ var controlCenter = (function(budgetCtrl,UICtrl){
                 budget: 0,
                 percentage: -1
             })
+
+
             setupEventListeners();
         }
     }
