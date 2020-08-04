@@ -53,6 +53,16 @@ var budgetController = (function (){
 
             return newItem;
         },
+        removeItem: function(idItem , typeItem){
+            var index;
+            idItem = parseInt(idItem);
+            for(var i = 0 ; i<data.allItems[typeItem].length ; i++)
+                if(idItem === (data.allItems[typeItem][i].id)) 
+                    index = data.allItems[typeItem].indexOf(data.allItems[typeItem][i]) ;
+            
+            if (index !== -1)
+                data.allItems[typeItem].splice(index , 1);
+        },
         calculateBudget: function(){
             data.total.exp = calculateTotal('exp');
             data.total.inc = calculateTotal('inc');
@@ -113,6 +123,7 @@ var UIController = (function (){
             document.querySelector(element).insertAdjacentHTML('beforeend',newHTML);
         },
 
+
         //clear description and value fields after each insert
         clearFields: function(){
             var fields,fieldsArr;
@@ -148,7 +159,6 @@ var UIController = (function (){
 
  // Connect between UI and Data Modules //
 var controlCenter = (function(budgetCtrl,UICtrl){ 
-    
     
     function setupEventListeners(){
         document.querySelector(UICtrl.getDOMStrings().buttonV).addEventListener('click',ctrlAddItem);
@@ -193,24 +203,18 @@ var controlCenter = (function(budgetCtrl,UICtrl){
     function ctrlDeleteItem(event){
         //getItemID get the unique id of the item 
         var getItemID , splitID ,typeItem , idItem;
-        getItemID = event.target.parentNode.parentNode.parentNode.id;
+        getItemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        console.log(getItemID);
 
         if (getItemID){
             splitID = getItemID.split('-');
             idItem = splitID[1];
             typeItem = splitID [0];
-            for (var i = 0 ; i<budgetCtrl.getData().allItems[type].length ;i++){
-                if(idItem === budgetCtrl.getData().allItems[type][i].id ){
-
-                }
-
+            budgetCtrl.removeItem(idItem,typeItem);
             }
 
 
         }
-
-    }
-
 
     return { 
         init: function(){
