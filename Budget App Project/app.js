@@ -196,7 +196,16 @@ var UIController = (function (){
             var monthArr = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             document.querySelector(DOMStrings.showMonth).textContent = monthArr[new Date().getMonth()];
         },
+        changeType: function(){
+            var fields = document.querySelectorAll(DOMStrings.Type + ',' + DOMStrings.Description + ',' + DOMStrings.Value);
+            var fieldsArr = Array.prototype.slice.call(fields);
+            fieldsArr.forEach(function(cur){
+                cur.classList.toggle('red-focus');
+            })
+            document.querySelector(DOMStrings.buttonV).classList.toggle('red');
 
+    
+        },
         //Get Access to DOMString object
         getDOMStrings: function(){
             return DOMStrings;
@@ -218,6 +227,7 @@ var controlCenter = (function(budgetCtrl,UICtrl){
             }                                                                                 
         })
         document.querySelector(UICtrl.getDOMStrings().Container).addEventListener('click',ctrlDeleteItem);
+        document.querySelector(UICtrl.getDOMStrings().Type).addEventListener('change', UICtrl.changeType)
     }     
 
 
