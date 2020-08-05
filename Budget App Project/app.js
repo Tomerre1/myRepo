@@ -107,7 +107,8 @@ var UIController = (function (){
         IncomeBudget: '.budget__income--value',
         ExpenseBudget: '.budget__expenses--value',
         Container: '.container',
-        expPercent: '.item__percentage'
+        expPercent: '.item__percentage',
+        showMonth: '.budget__title--month'
     }
 
     return {
@@ -190,6 +191,10 @@ var UIController = (function (){
             else
                 returnedNumber = num[0];
             return (type === 'exp')? '- ' + returnedNumber + '.' + decPart : '+ ' + returnedNumber + '.' + decPart;
+        },
+        ShowTheMonth: function(){
+            var monthArr = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.querySelector(DOMStrings.showMonth).textContent = monthArr[new Date().getMonth()];
         },
 
         //Get Access to DOMString object
@@ -283,7 +288,7 @@ var controlCenter = (function(budgetCtrl,UICtrl){
                 percentage: -1
             })
 
-
+            UICtrl.ShowTheMonth();
             setupEventListeners();
         }
     }
